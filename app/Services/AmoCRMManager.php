@@ -5,6 +5,7 @@ namespace App\Services;
 use AmoCRM\Collections\LinksCollection;
 use AmoCRM\Models\BaseApiModel;
 use AmoCRM\Models\Interfaces\CanBeLinkedInterface;
+use App\Services\EntityMakers\ContactCustomer;
 use Exception;
 
 class AmoCRMManager
@@ -34,6 +35,13 @@ class AmoCRMManager
      */
     public function manage() :void
     {
+
+        $contactCustomer = new ContactCustomer($this->fields);
+
+        if ($contactCustomer->check($this->api, 'PHONE')) {
+            return;
+        }
+
         $this->initiateEntities();
         $this->checkEntities();
 
