@@ -14,5 +14,12 @@ use App\Http\Controllers\ContactController;
 |
 */
 
-Route::get('/', [ContactController::class, "create"])->name('contact.create');
-Route::post('/', [ContactController::class, "create"])->name('contact.store');
+
+Route::redirect('/', '/contact/create');
+
+Route::get('/contact/create', [ContactController::class, "create"])
+    ->name('contact.create');
+
+Route::post('/contact/store', [ContactController::class, "store"])
+    ->name('contact.store')
+    ->middleware('contact.validator');

@@ -1,0 +1,19 @@
+#alert-failure {
+    position: absolute;
+    top: 75px;
+    width: 50%;
+    height: 50px;
+    left: 25%;
+    display: inline-block;
+    margin: auto;
+    text-align: center;
+    background-color: #fa6b6b;
+    color: white;
+    padding-top: 10px;
+    font-size: 20px;
+    border-radius: 8px;
+}
+
+.hidden {
+    opacity: 0%;
+}
