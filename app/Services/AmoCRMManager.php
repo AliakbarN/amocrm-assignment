@@ -5,7 +5,6 @@ namespace App\Services;
 use AmoCRM\Collections\LinksCollection;
 use AmoCRM\Models\BaseApiModel;
 use AmoCRM\Models\Interfaces\CanBeLinkedInterface;
-use App\Services\EntityMakers\ContactCustomer;
 use Exception;
 
 class AmoCRMManager
