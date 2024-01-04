@@ -9,6 +9,7 @@ use AmoCRM\EntitiesServices\Leads;
 use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Exceptions\AmoCRMMissedTokenException;
 use AmoCRM\Exceptions\AmoCRMoAuthApiException;
+use AmoCRM\Exceptions\InvalidArgumentException;
 use AmoCRM\Models\BaseApiModel;
 use AmoCRM\Models\Interfaces\CanBeLinkedInterface;
 use AmoCRM\Models\UserModel;
