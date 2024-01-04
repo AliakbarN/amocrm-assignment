@@ -35,9 +35,9 @@ class AmoCRMManager
     public function manage() :void
     {
 
-        $contactCustomer = new ContactCustomer($this->fields);
+        $checkedContact = (new ContactCustomer($this->fields))->check($this->api, 'PHONE');
 
-        if ($contactCustomer->check($this->api, 'PHONE')) {
+        if ($checkedContact) {
             return;
         }
 
