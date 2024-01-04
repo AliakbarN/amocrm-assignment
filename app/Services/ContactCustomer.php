@@ -74,7 +74,7 @@ class ContactCustomer
         if (!$this->isContactLeadSucceeded($existingContact->getLeads(), $api)) {
             $tagsCollection = new TagsCollection();
             $tag = new TagModel();
-            $tag->setName('There was an attempt to create a double of the contact' . $existingContact->getName());
+            $tag->setName('There was an attempt to create a double of the contact - ' . $existingContact->getName());
             $tag->setColor(TagColorsEnum::LAPIS_LAZULI);
             $tagsCollection->add($tag);
             $tagsService = $api->appClient->tags(EntityTypesInterface::CONTACTS);
@@ -86,7 +86,7 @@ class ContactCustomer
             } catch (AmoCRMoAuthApiException|AmoCRMApiException $e) {
                 dd($e);
             }
-            
+
             return true;
         }
 
