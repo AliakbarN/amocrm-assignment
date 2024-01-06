@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AmoCRM\GetOAuthCredentialsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +14,6 @@ use App\Http\Controllers\Api\AmoCRM\GetOAuthCredentialsController;
 |
 */
 
-Route::get('/get-credentials', [GetOAuthCredentialsController::class, 'getCredentials']);
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
