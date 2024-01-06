@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\EntityMakers;
 
 use AmoCRM\Collections\ContactsCollection;
 use AmoCRM\Collections\Leads\LeadsCollection;
@@ -43,7 +43,7 @@ class ContactCustomer
         }
 
         $customer = new CustomerModel();
-        $customer->setName($contact->getName() . ' customer');
+        $customer->setName($this->generateName());
 
         $api->entitiesServices['customer']->addOne($customer);
 
@@ -100,5 +100,10 @@ class ContactCustomer
         }
 
         return null;
+    }
+
+    protected function generateName() :string
+    {
+        return $this->customFieldsValues['firstName'] . ' ' . $this->customFieldsValues['lastName'];
     }
 }
