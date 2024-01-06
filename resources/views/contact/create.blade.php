@@ -19,11 +19,8 @@
     <link href="{{  asset("assets/vendor/select2/select2.min.css")  }}" rel="stylesheet" media="all">
     <link href="{{  asset("assets/vendor/datepicker/daterangepicker.css")  }}" rel="stylesheet" media="all">
 
-
     <!-- Main CSS-->
     <link href="{{  asset("assets/css/main.css")  }}" rel="stylesheet" media="all">
-    <link href="{{  asset("assets/css/alert.success.css")  }}" rel="stylesheet" media="all">
-    <link href="{{  asset("assets/css/alert.failure.css")  }}" rel="stylesheet" media="all">
 </head>
 
 <body>
@@ -34,21 +31,21 @@
                 <h2 class="title">contact form</h2>
             </div>
             <div class="card-body">
-                <form method="POST" id="form" action="{{  route('contact.store')  }}">
+                <form method="POST" action="{{  route('contact.store')  }}">
 
                     @csrf
 
                     <div class="form-row m-b-55">
                         <div class="name">name</div>
                         <div class="value">
-                            <div class="row row-space" style="display: flex">
+                            <div class="row row-space">
                                 <div class="col-2">
-                                    <div class="input-group-desc" style="width: 200px">
+                                    <div class="input-group-desc">
                                         <input class="input--style-5" id="form.first-name" type="text" name="first_name">
                                         <label class="label--desc">first name</label>
                                     </div>
                                 </div>
-                                <div class="col-2"  style="width: 200px; display: block">
+                                <div class="col-2">
                                     <div class="input-group-desc">
                                         <input class="input--style-5" type="text" id="form.last-name" name="last_name">
                                         <label class="label--desc">last name</label>
@@ -105,11 +102,6 @@
         </div>
     </div>
 </div>
-
-
-@include('partials.alerts.success')
-@include('partials.alerts.failure')
-
 
 <!-- Jquery JS-->
 <script src="{{  asset("assets/vendor/jquery/jquery.min.js")  }}"></script>
