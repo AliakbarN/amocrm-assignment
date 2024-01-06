@@ -4,17 +4,12 @@ namespace App\Services;
 
 use AmoCRM\Collections\ContactsCollection;
 use AmoCRM\Collections\Leads\LeadsCollection;
-use AmoCRM\Collections\TagsCollection;
-use AmoCRM\Enum\Tags\TagColorsEnum;
 use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Exceptions\AmoCRMMissedTokenException;
 use AmoCRM\Exceptions\AmoCRMoAuthApiException;
-use AmoCRM\Exceptions\InvalidArgumentException;
-use AmoCRM\Helpers\EntityTypesInterface;
 use AmoCRM\Models\ContactModel;
 use AmoCRM\Models\Customers\CustomerModel;
 use AmoCRM\Models\LeadModel;
-use AmoCRM\Models\TagModel;
 use App\Services\AmoCRMAPI;
 
 class ContactCustomer
@@ -43,10 +38,8 @@ class ContactCustomer
 
         $contact = $this->getValidContact($contacts, $api, $fieldCode);
 
-        if ($contact === false) {
+        if ($contact === null) {
             return false;
-        } elseif ($contact === true) {
-            return true;
         }
 
         $customer = new CustomerModel();
@@ -59,35 +52,16 @@ class ContactCustomer
         return true;
     }
 
-    /**
-     * @throws InvalidArgumentException
-     * @throws AmoCRMMissedTokenException
-     */
-    protected function getValidContact(ContactsCollection $contacts, AmoCRMAPI $api, string $fieldCode) :ContactModel|bool
+    protected function getValidContact(ContactsCollection $contacts, AmoCRMAPI $api, string $fieldCode) :?ContactModel
     {
         $existingContact = $this->getNonUniqueContact($contacts, $fieldCode);
 
         if ($existingContact === null) {
-            return false;
+            return null;
         }
 
         if (!$this->isContactLeadSucceeded($existingContact->getLeads(), $api)) {
-            $tagsCollection = new TagsCollection();
-            $tag = new TagModel();
-            $tag->setName('There was an attempt to create a double of the contact' . $existingContact->getName());
-            $tag->setColor(TagColorsEnum::LAPIS_LAZULI);
-            $tagsCollection->add($tag);
-            $tagsService = $api->appClient->tags(EntityTypesInterface::CONTACTS);
-
-            try {
-                $tagsService->add($tagsCollection);
-                $existingContact->setTags($tagsCollection);
-                $api->entitiesServices['contact']->updateOne($existingContact);
-            } catch (AmoCRMoAuthApiException|AmoCRMApiException $e) {
-                dd($e);
-            }
-            
-            return true;
+            return null;
         }
 
         return $existingContact;
