@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\EntityMakers;
 
@@ -12,7 +13,7 @@ use AmoCRM\Models\ContactModel;
 use App\Services\AmoCRMAPI;
 use App\Services\BaseEntityMaker;
 
-class Contact extends BaseEntityMaker
+class ContactMaker extends BaseEntityMaker
 {
 
     protected array $entityCustomFields = [
@@ -41,7 +42,7 @@ class Contact extends BaseEntityMaker
         $contact->setLastName($this->customFieldsValues['lastName']);
         $contact->setCustomFieldsValues($this->generateFields($this->mergeModelTypeWithItsValue()));
         $contact->setResponsibleUserId($api->getResponsibleUserId());
-        return $api->appClient->contacts()->addOne($contact);
+        return $api->apiClient->contacts()->addOne($contact);
     }
 
     protected function generateEntityName(): string

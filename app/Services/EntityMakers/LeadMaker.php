@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\EntityMakers;
 
@@ -13,9 +14,9 @@ use AmoCRM\Models\CustomFieldsValues\ValueModels\NumericCustomFieldValueModel;
 use AmoCRM\Models\LeadModel;
 use App\Services\AmoCRMAPI;
 use App\Services\BaseEntityMaker;
-use App\Services\CustomFieldsGenerator;
+use App\Services\CustomFieldsGeneratorTrait;
 
-class Lead extends BaseEntityMaker
+class LeadMaker extends BaseEntityMaker
 {
 
     protected array $entityCustomFields = [
@@ -42,7 +43,7 @@ class Lead extends BaseEntityMaker
         $lead->setCustomFieldsValues($this->generateFields($this->mergeModelTypeWithItsValue()));
         $lead->setResponsibleUserId($api->getResponsibleUserId());
 
-        return $api->appClient->leads()->addOne($lead);
+        return $api->apiClient->leads()->addOne($lead);
     }
 
 

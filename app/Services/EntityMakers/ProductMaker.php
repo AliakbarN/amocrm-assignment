@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services\EntityMakers;
 
+use AmoCRM\Collections\BaseApiCollection;
 use AmoCRM\Collections\CatalogElementsCollection;
 use AmoCRM\Collections\LinksCollection;
 use AmoCRM\Exceptions\AmoCRMApiException;
@@ -15,10 +17,10 @@ use App\Services\AmoCRMAPI;
 use App\Services\BaseEntityMaker;
 
 
-class Product extends BaseEntityMaker
+class ProductMaker extends BaseEntityMaker
 {
 
-    protected int $productNumber = 2;
+    public const PRODUCT_COUNT = 2;
 
     /**
      * @throws InvalidArgumentException
@@ -26,25 +28,14 @@ class Product extends BaseEntityMaker
      * @throws AmoCRMMissedTokenException
      * @throws AmoCRMoAuthApiException
      */
-    public function generate(AmoCRMAPI $api): LinksCollection
+    public function generate(AmoCRMAPI $api): BaseApiCollection
     {
         $productElementsCollection = new CatalogElementsCollection();
-        $productElementsCollection = $this->makeProducts($productElementsCollection, $this->productNumber);
+        $productElementsCollection = $this->makeProducts($productElementsCollection, self::PRODUCT_COUNT);
 
         // create 2 products
-        $productsCatalog = $api->appClient->catalogs()->get()->getBy('name', 'Товары');
-        $productElementsCollection = $api->appClient->catalogElements($productsCatalog->getId())->add($productElementsCollection);
-
-        $link = new LinksCollection();
-
-        foreach ($productElementsCollection as $element)
-        {
-            $link->add(
-                $element->setQuantity($this->productNumber)
-            );
-        }
-
-        return $link;
+        $productsCatalog = $api->apiClient->catalogs()->get()->getBy('type', 'products');
+        return $api->apiClient->catalogElements($productsCatalog->getId())->add($productElementsCollection);
     }
 
     protected function generateEntityName(): string

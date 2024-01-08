@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('phone', function ($attribute, $value, $parameters, $validator) {
             // Your phone validation logic goes here
             // Example: Check if the value is a valid phone number
-            return preg_match('/^[0-9]{30}$/', $value);
+            return preg_match('/^[0-9]{15}$/', $value);
         });
 
         Validator::replacer('phone', function ($message, $attribute, $rule, $parameters) {

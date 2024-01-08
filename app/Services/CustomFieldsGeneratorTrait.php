@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services;
 
@@ -10,8 +11,9 @@ use AmoCRM\Models\CustomFieldsValues\TextCustomFieldValuesModel;
 use AmoCRM\Models\CustomFieldsValues\ValueModels\TextCustomFieldValueModel;
 use AmoCRM\Models\CustomFieldsValues\ValueCollections\TextCustomFieldValueCollection;
 use AmoCRM\Models\LeadModel;
+use Exception;
 
-trait CustomFieldsGenerator
+trait CustomFieldsGeneratorTrait
 {
 
 
@@ -23,14 +25,6 @@ trait CustomFieldsGenerator
         'gender' => TextCustomFieldValuesModel::class,
         'email' => MultitextCustomFieldValuesModel::class,
         'age' => NumericCustomFieldValuesModel::class
-    ];
-
-
-    protected array $customFieldsIds = [
-        'phone' => 'PHONE',
-        'email' => 'EMAIL',
-        'age' => 874423,
-        'gender' => 874525
     ];
 
     // fields and values form form
@@ -72,11 +66,18 @@ trait CustomFieldsGenerator
 
     /**
      * @param string $modelName
-     * @param int $mode, 1 0r 0
+     * @param int $mode , 1 0r 0
      * @return string
+     * @throws Exception
+     * @example mode 1 - returns custom fields values model, mode 0 - returns custom fields value collection's values model
+     *
      */
     protected function changeModelToCollection(string $modelName, int $mode) :string
     {
+        if ($mode !== 0 | $mode !== 1) {
+            throw new Exception('mode should be 1 or 0');
+        }
+
         $explodedClassName = explode('\\', $modelName);
 
         if ($mode === 1) {
@@ -100,7 +101,7 @@ trait CustomFieldsGenerator
             $mergedArray[$customField] = [
                 'modelType' => $this->customFieldValuesModelType[$customField],
                 'value' => $this->customFieldsValues[$customField],
-                'id' => $this->customFieldsIds[$customField]
+                'id' => AmoCRMAPI::getCustomFieldIdentifier($customField)
             ];
         }
 

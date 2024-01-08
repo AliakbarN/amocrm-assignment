@@ -1,10 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services;
 
 use AmoCRM\Collections\LinksCollection;
 use AmoCRM\Models\BaseApiModel;
 use AmoCRM\Models\Interfaces\CanBeLinkedInterface;
+use AmoCRM\Models\LeadModel;
+use App\Services\ContactCustomerMaker;
+use App\Services\EntityMakers\CustomerMaker;
+use App\Services\EntityMakers\ProductMaker;
 use Exception;
 
 class AmoCRMManager
@@ -13,7 +18,7 @@ class AmoCRMManager
 
     protected array $fields = [];
     /**
-     * @var array<string, BaseApiModel|LinksCollection>
+     * @var array<string, BaseApiModel|CanBeLinkedInterface|LinksCollection>
      *
      * example ['lead' => App\Services\EntityMakers\Lead]
      *
@@ -34,10 +39,17 @@ class AmoCRMManager
      */
     public function manage() :void
     {
+        $contactCustomer = new ContactCustomerMaker($this->api, $this->fields['phone']);
 
-        $checkedContact = (new ContactCustomer($this->fields))->check($this->api, 'PHONE');
+        if ($contactCustomer->isContactExists(AmoCRMAPI::getCustomFieldIdentifier('phone'))) {
 
-        if ($checkedContact) {
+            if ($contactCustomer->hasSuccessfulLead()) {
+                $customerMaker = new CustomerMaker($contactCustomer->getContact());
+                $customerMaker->generate();
+            } else {
+                $contactCustomer->generateTag();
+            }
+
             return;
         }
 
@@ -45,14 +57,23 @@ class AmoCRMManager
         $this->checkEntities();
 
         // link contact to lead and vise versa
-        $this->api->link($this->api->entitiesServices['contact'], $this->entities['contact'], $this->entities['lead']);
         $this->api->link($this->api->entitiesServices['lead'], $this->entities['lead'], $this->entities['contact']);
 
         // create task
+        $this->entities['task']->setResponsibleUserId($this->entities['task']->getResponsibleUserId());
         $this->api->entitiesServices['task']->addOne($this->entities['task']->setEntityId($this->entities['lead']->getId()));
 
         // link products to lead
-        $this->api->link($this->api->entitiesServices['lead'], $this->entities['lead'], preparedLink: $this->entities['product']);
+        $productLinks = new LinksCollection();
+
+        foreach ($this->entities['product'] as $element)
+        {
+            $productLinks->add(
+                $element->setQuantity(ProductMaker::PRODUCT_COUNT)
+            );
+        }
+
+        $this->api->link($this->api->entitiesServices['lead'], $this->entities['lead'], preparedLink: $productLinks);
     }
 
     /**
@@ -92,7 +113,7 @@ class AmoCRMManager
 
         foreach ($this->entities as $entity => $entityClass)
         {
-            if (!in_array($entity, $availableEntities)) {
+            if (!in_array($entity, $availableEntities, true)) {
                 throw new Exception('Check the entity makers, possibly you missed something');
             }
         }

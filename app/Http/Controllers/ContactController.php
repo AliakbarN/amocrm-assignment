@@ -1,13 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Services\AmoCRMAPI;
 use App\Services\AmoCRMManager;
-use App\Services\EntityMakers\Contact;
-use App\Services\EntityMakers\Lead;
-use App\Services\EntityMakers\Product;
-use App\Services\EntityMakers\Task;
+use App\Services\EntityMakers\ContactMaker;
+use App\Services\EntityMakers\LeadMaker;
+use App\Services\EntityMakers\ProductMaker;
+use App\Services\EntityMakers\TaskMaker;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -36,10 +37,10 @@ class ContactController extends Controller
 
         $amoManager = new AmoCRMManager(new AmoCRMAPI(), $data);
         $amoManager->registerEntityMakers([
-            'lead' => Lead::class,
-            'contact' => Contact::class,
-            'task' => Task::class,
-            'product' => Product::class
+            'lead' => LeadMaker::class,
+            'contact' => ContactMaker::class,
+            'task' => TaskMaker::class,
+            'product' => ProductMaker::class
         ]);
 
         $amoManager->manage();

@@ -1,20 +1,40 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\EntityMakers;
 
+use AmoCRM\Exceptions\AmoCRMApiException;
+use AmoCRM\Exceptions\AmoCRMMissedTokenException;
+use AmoCRM\Exceptions\AmoCRMoAuthApiException;
+use AmoCRM\Helpers\EntityTypesInterface;
+use AmoCRM\Models\BaseApiModel;
+use AmoCRM\Models\TaskModel;
+use App\Services\AmoCRMAPI;
+use App\Services\BaseEntityMaker;
+use App\Services\Helper;
 use DateInterval;
 use DateTime;
+use Exception;
 
-class Helper
+class TaskMaker extends BaseEntityMaker
 {
-    public static function getAmoCRMClientConfig() :array
+
+    protected ?int $responsibleUserId = null;
+
+    /**
+     * @throws Exception
+     */
+    public function generate(AmoCRMAPI $api): BaseApiModel
     {
-        return [
-            config('amoCRM.client_id'),
-            config('amoCRM.client_secret'),
-            config('amoCRM.client_redirect_url')
-        ];
+        $task = new TaskModel();
+        $task->setTaskTypeId(TaskModel::TASK_TYPE_ID_FOLLOW_UP);
+        $task->setText('The task should be done');
+        $task->setCompleteTill(self::generateDate(4));
+        $task->setEntityType(EntityTypesInterface::LEADS);
+
+        return $task;
     }
+
 
     public static function generateDate(int $numDays) :int
     {
@@ -44,5 +64,10 @@ class Helper
 
         // Return the result as a timestamp
         return $currentDate->getTimestamp();
+    }
+
+    protected function generateEntityName(): string
+    {
+        return '';
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services;
 
@@ -12,11 +13,19 @@ use AmoCRM\Exceptions\AmoCRMoAuthApiException;
 use AmoCRM\Exceptions\InvalidArgumentException;
 use AmoCRM\Models\BaseApiModel;
 use AmoCRM\Models\Interfaces\CanBeLinkedInterface;
+use AmoCRM\Models\LeadModel;
 use AmoCRM\Models\UserModel;
 
 class AmoCRMAPI
 {
-    public AmoCRMApiClient $appClient;
+    public AmoCRMApiClient $apiClient;
+
+    protected static array $customFieldsIdentifiers = [
+        'phone' => 'PHONE',
+        'email' => 'EMAIL',
+        'age' => 874423,
+        'gender' => 874525
+    ];
 
     /**
      * @var array|string[]
@@ -28,7 +37,7 @@ class AmoCRMAPI
         'contact',
         'task',
         'customer',
-        'product'
+        'product',
     ];
 
     public array $entitiesServices;
@@ -38,7 +47,7 @@ class AmoCRMAPI
      */
     public function __construct()
     {
-        $this->appClient = $this->initiateAmoCRMClient();
+        $this->apiClient = $this->initiateAmoCRMClient();
         $this->initiateEntitiesServices();
     }
 
@@ -59,7 +68,7 @@ class AmoCRMAPI
     }
 
     // links entities
-    public function link(mixed $service, mixed $model, mixed $modelToLink = null, LinksCollection $preparedLink = null) :LinksCollection
+    public function link(BaseEntity $service, BaseApiModel $model, CanBeLinkedInterface $modelToLink = null, LinksCollection $preparedLink = null) :LinksCollection
     {
         $links = null;
 
@@ -80,7 +89,7 @@ class AmoCRMAPI
      */
     public function getResponsibleUserId(): int
     {
-        $users = $this->appClient->users()->get();
+        $users = $this->apiClient->users()->get();
         /** @var UserModel $randomUser */
         $randomUser = collect($users)->random();
 
@@ -94,10 +103,10 @@ class AmoCRMAPI
     {
         $this->registerEntitiesServices();
 
-        $this->entitiesServices['lead'] = $this->appClient->leads();
-        $this->entitiesServices['contact'] = $this->appClient->contacts();
-        $this->entitiesServices['task'] = $this->appClient->tasks();
-        $this->entitiesServices['customer'] = $this->appClient->customers();
+        $this->entitiesServices['lead'] = $this->apiClient->leads();
+        $this->entitiesServices['contact'] = $this->apiClient->contacts();
+        $this->entitiesServices['task'] = $this->apiClient->tasks();
+        $this->entitiesServices['customer'] = $this->apiClient->customers();
     }
 
     protected function registerEntitiesServices() :void
@@ -106,5 +115,14 @@ class AmoCRMAPI
         {
             $this->entitiesServices[$entity] = null;
         }
+    }
+
+    public static function getCustomFieldIdentifier(string $fieldName) : string|int|null
+    {
+        if (!array_key_exists($fieldName, self::$customFieldsIdentifiers)) {
+            return null;
+        }
+
+        return self::$customFieldsIdentifiers[$fieldName];
     }
 }
