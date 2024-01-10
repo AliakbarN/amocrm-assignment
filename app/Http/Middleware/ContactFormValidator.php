@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use Closure;
+use Fig\Http\Message\StatusCodeInterface;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContactFormValidator
 {
-
-    private const ERROR_STATUS_CODE = 422;
-
     /**
      * Handle an incoming request.
      *
@@ -24,7 +22,7 @@ class ContactFormValidator
         foreach ($data as $field => $value)
         {
             if (trim($value) === '') {
-                return new Response('Validation was failed', self::ERROR_STATUS_CODE);
+                return new Response('Validation was failed', StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY);
             }
         }
 

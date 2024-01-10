@@ -1,5 +1,8 @@
 <?php
 
+use AmoCRM\Client\AmoCRMApiClient;
+use App\Services\Helpers\ConfigHelper;
+use App\Services\TokenSaver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AmoCRM\GetOAuthCredentialsController;
@@ -16,3 +19,10 @@ use App\Http\Controllers\Api\AmoCRM\GetOAuthCredentialsController;
 */
 
 Route::get('/get-credentials', [GetOAuthCredentialsController::class, 'getCredentials']);
+Route::get('dev', function () {
+    $apiClient = new AmoCRMApiClient(...ConfigHelper::getAmoCRMClientConfig());
+    $apiClient->setAccountBaseDomain(config('amoCRM.base_domain'));
+    $apiClient->setAccessToken(TokenSaver::restore());
+
+    dd($apiClient->catalogs()->getOne(6523));
+});

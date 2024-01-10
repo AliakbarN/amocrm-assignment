@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\EntityMakers;
@@ -11,15 +12,12 @@ use AmoCRM\Models\BaseApiModel;
 use AmoCRM\Models\TaskModel;
 use App\Services\AmoCRMAPI;
 use App\Services\BaseEntityMaker;
-use App\Services\Helper;
 use DateInterval;
 use DateTime;
 use Exception;
 
 class TaskMaker extends BaseEntityMaker
 {
-
-    protected ?int $responsibleUserId = null;
 
     /**
      * @throws Exception
@@ -45,12 +43,9 @@ class TaskMaker extends BaseEntityMaker
         $workStartHour = 9;
         $workEndHour = 18;
 
-        // Loop through each day to add weekdays
         for ($i = 0; $i < $numDays; $i++) {
-            do {
-                // Add one day to the current date
-                $currentDate->modify('+1 day');
-            } while ($currentDate->format('N') >= 6); // Skip weekends (Saturday and Sunday)
+            // Add one day to the current date
+            $currentDate->modify('+1 day');
 
             // Set the time to the start of the workday (9 am)
             $currentDate->setTime($workStartHour, 0, 0);
@@ -60,6 +55,11 @@ class TaskMaker extends BaseEntityMaker
                 $currentDate->modify('+1 day');
                 $currentDate->setTime($workStartHour, 0, 0);
             }
+        }
+
+        // If the final date falls on a weekend, adjust to Monday
+        if ($currentDate->format('N') >= 6) {
+            $currentDate->modify('next Monday');
         }
 
         // Return the result as a timestamp

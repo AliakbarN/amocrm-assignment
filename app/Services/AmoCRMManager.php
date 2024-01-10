@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -45,7 +46,7 @@ class AmoCRMManager
 
             if ($contactCustomer->hasSuccessfulLead()) {
                 $customerMaker = new CustomerMaker($contactCustomer->getContact());
-                $customerMaker->generate();
+                $customerMaker->generate($this->api);
             } else {
                 $contactCustomer->generateTag();
             }
@@ -60,7 +61,7 @@ class AmoCRMManager
         $this->api->link($this->api->entitiesServices['lead'], $this->entities['lead'], $this->entities['contact']);
 
         // create task
-        $this->entities['task']->setResponsibleUserId($this->entities['task']->getResponsibleUserId());
+        $this->entities['task']->setResponsibleUserId($this->entities['lead']->getResponsibleUserId());
         $this->api->entitiesServices['task']->addOne($this->entities['task']->setEntityId($this->entities['lead']->getId()));
 
         // link products to lead

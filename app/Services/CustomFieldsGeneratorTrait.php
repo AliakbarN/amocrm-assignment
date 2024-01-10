@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -16,6 +17,8 @@ use Exception;
 trait CustomFieldsGeneratorTrait
 {
 
+    const FIRST_MODE = 1;
+    const SECOND_MODE = 2;
 
     // example [phone => 'NumericCustomFieldValueModel::class']
     protected array $customFieldValuesModelType = [
@@ -34,6 +37,7 @@ trait CustomFieldsGeneratorTrait
      * @param array<BaseCustomFieldValuesModel> $fields
      * @return CustomFieldsValuesCollection
      *
+     * @throws Exception
      */// generates custom fields dynamically
     protected function generateFields(array $fields) : CustomFieldsValuesCollection
     {
@@ -50,9 +54,9 @@ trait CustomFieldsGeneratorTrait
                 $customFieldValuesModel->setFieldId($data['id']);
             }
 
-            $customFieldValuesModel->setValues((new ($this->changeModelToCollection($customFieldValuesModelType, 0)))
+            $customFieldValuesModel->setValues((new ($this->changeModelToCollection($customFieldValuesModelType, self::SECOND_MODE)))
                     ->add(
-                        (new ($this->changeModelToCollection($customFieldValuesModelType, 1)))
+                        (new ($this->changeModelToCollection($customFieldValuesModelType, self::FIRST_MODE)))
                             ->setValue($data['value'])
                     )
                 );
@@ -74,8 +78,8 @@ trait CustomFieldsGeneratorTrait
      */
     protected function changeModelToCollection(string $modelName, int $mode) :string
     {
-        if ($mode !== 0 | $mode !== 1) {
-            throw new Exception('mode should be 1 or 0');
+        if ($mode !== self::FIRST_MODE & $mode !== self::SECOND_MODE) {
+            throw new Exception('the mose must be FIRST_MODE or SECOND_MODE');
         }
 
         $explodedClassName = explode('\\', $modelName);

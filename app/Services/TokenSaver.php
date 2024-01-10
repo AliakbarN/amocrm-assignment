@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -24,7 +25,7 @@ class TokenSaver
     public static function restore() :AccessTokenInterface
     {
         // Read stored data from the file
-        $data = json_decode(Storage::disk('local')->get(self::generatePathToFile()), 1);
+        $data = json_decode(Storage::disk('local')->get(self::generatePathToFile()), true);
         return new AccessToken($data);
     }
 }

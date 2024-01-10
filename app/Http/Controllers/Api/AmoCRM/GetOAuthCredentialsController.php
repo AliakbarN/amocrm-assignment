@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\AmoCRM;
@@ -27,7 +28,7 @@ class GetOAuthCredentialsController
         $apiClient->setAccountBaseDomain(config('amoCRM.base_domain'));
 
         $tokenData = $apiClient->getOAuthClient()->getAccessTokenByCode($code);
-//        $apiClient->setAccessToken($tokenData);
+        TokenSaver::save($tokenData);
 
         return to_route('contact.create');
     }

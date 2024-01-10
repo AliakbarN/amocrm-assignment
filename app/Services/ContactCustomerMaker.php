@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -30,13 +31,19 @@ class ContactCustomerMaker
 
     public function __construct(AmoCRMAPI $api, string|int $customFieldPhoneValue)
     {
-        $this->$customFieldPhoneValue = $customFieldPhoneValue;
+        $this->customFieldPhoneValue = $customFieldPhoneValue;
         $this->api = $api;
     }
 
     public function isContactExists(string $fieldCode) :bool
     {
-        $contacts = $this->api->entitiesServices['contact']->get(with: (array)ContactModel::LEADS);
+        $contacts = null;
+
+        try {
+            $contacts = $this->api->entitiesServices['contact']->get(with: (array)ContactModel::LEADS);
+        } catch (\Exception $exception) {
+            return false;
+        }
 
         $existingContact = $this->getExistingContact($contacts, $fieldCode);
 
@@ -56,24 +63,19 @@ class ContactCustomerMaker
      */
     public function generateTag() :void
     {
-        $tagsCollection = new TagsCollection();
         $tag = new TagModel();
         $tag->setName('There was an attempt to create a double of the contact - ' . $this->contact->getName());
         $tag->setColor(TagColorsEnum::LAPIS_LAZULI);
-        $tagsCollection->add($tag);
 
         $contactTags = $this->contact->getTags();
 
-        if ($contactTags !== null) {
-            /** @var TagModel $contactTag */
-            foreach ($contactTags as $contactTag)
-            {
-                $tagsCollection->add($contactTag);
-            }
+        if ($contactTags === null) {
+            $this->contact->setTags((new TagsCollection())->add($tag));
+        } else {
+            $contactTags->add($tag);
         }
 
-        $this->api->apiClient->tags(EntityTypesInterface::CONTACTS)->add($tagsCollection);
-        $this->contact->setTags($tagsCollection);
+        $this->api->apiClient->tags(EntityTypesInterface::CONTACTS)->addOne($tag);
         $this->api->entitiesServices['contact']->updateOne($this->contact);
     }
 

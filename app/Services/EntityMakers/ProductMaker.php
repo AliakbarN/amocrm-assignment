@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\EntityMakers;
@@ -21,6 +22,7 @@ class ProductMaker extends BaseEntityMaker
 {
 
     public const PRODUCT_COUNT = 2;
+    protected const PRODUCT_CATALOG_ID = 6523;
 
     /**
      * @throws InvalidArgumentException
@@ -34,7 +36,7 @@ class ProductMaker extends BaseEntityMaker
         $productElementsCollection = $this->makeProducts($productElementsCollection, self::PRODUCT_COUNT);
 
         // create 2 products
-        $productsCatalog = $api->apiClient->catalogs()->get()->getBy('type', 'products');
+        $productsCatalog = $api->apiClient->catalogs()->getOne(self::PRODUCT_CATALOG_ID);
         return $api->apiClient->catalogElements($productsCatalog->getId())->add($productElementsCollection);
     }
 
